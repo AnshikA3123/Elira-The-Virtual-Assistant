@@ -5,7 +5,7 @@ import axios from "axios";
 export const UserDataContext = createContext()
 function UserContext({children}) {
     // Backend URL with fallbacks: env variable -> production -> localhost
-    const serverUrl =  "http://localhost:8000";
+    const serverUrl =  "https://the-virtual-assistant-backend.onrender.com";
     
     const[userData,setUserData]=useState(null);
      const[frontendImage,setFrontendImage]=useState(null);
