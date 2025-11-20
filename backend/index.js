@@ -18,7 +18,7 @@ const port = process.env.PORT ||8000
 // Hardcoded production frontend URL as fallback
 const allowedOrigins = [
     process.env.FRONTEND_URL || 
-    "http://localhost:5173" // For local development
+   "https://elira-the-virtual-assistant.onrender.com" // For local development
 ];
 
 app.use(cors({
