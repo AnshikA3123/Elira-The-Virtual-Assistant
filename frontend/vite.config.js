@@ -3,9 +3,10 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [  tailwindcss(),react()],
-  base: process.env.VITE_BASE_PATH || '/virtual-assistent-project/',
+  plugins: [tailwindcss(), react()],
+  base: '/',        // <-- sirf yeh
   build: {
     outDir: 'dist',
   }
 })
+
