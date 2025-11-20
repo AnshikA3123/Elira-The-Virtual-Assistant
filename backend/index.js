@@ -1,62 +1,43 @@
-import express from "express"
-import dotenv from "dotenv"
-dotenv.config()
-import connectDb from "./config/db.js"
-import authRouter from "./routes/auth.routes.js"
-import cookieParser from "cookie-parser"
-import cors from "cors"
-import UserRouter from "./routes/User.routes.js"
-import geminiResponse from "./gemini.js"
+import express from "express";
+import dotenv from "dotenv";
+dotenv.config();
+import connectDb from "./config/db.js";
+import authRouter from "./routes/auth.routes.js";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import UserRouter from "./routes/User.routes.js";
+// import geminiResponse from "./gemini.js"; // agar use nahi kar rahe to rehne do
 
+const app = express();
+const port = process.env.PORT || 8000;
 
-
-
-const app = express()
-const port = process.env.PORT ||8000
-
-// CORS configuration - allow GitHub Pages origin
-// Hardcoded production frontend URL as fallback
+// ==== SIMPLE CORS SETUP ====
 const allowedOrigins = [
-    process.env.FRONTEND_URL || 
-   "https://elira-the-virtual-assistant.onrender.com" // For local development
+  "https://elira-the-virtual-assistant.onrender.com", // tumhara frontend (Render)
+  "http://localhost:5173"                             // local dev ke liye
 ];
 
-app.use(cors({
-    origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps or curl requests)
-        if (!origin) return callback(null, true);
-        
-        // Normalize origin (remove trailing slash and path)
-        const normalizedOrigin = origin.replace(/\/+$/, '').split('/').slice(0, 3).join('/');
-        
-        // Check if normalized origin matches any allowed origin
-        const isAllowed = allowedOrigins.some(allowed => {
-            const normalizedAllowed = allowed.replace(/\/+$/, '').split('/').slice(0, 3).join('/');
-            return normalizedOrigin === normalizedAllowed;
-        });
-        
-        if (isAllowed) {
-            callback(null, true);
-        } else {
-            console.log('CORS blocked origin:', origin, 'Normalized:', normalizedOrigin);
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    credentials: true
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
+
+// preflight (OPTIONS) ke liye
+app.options("*", cors({
+  origin: allowedOrigins,
+  credentials: true,
 }));
+
+// ==== MIDDLEWARES & ROUTES ====
 app.use(express.json());
 app.use(cookieParser());
-app.use("/api/auth",authRouter);
+
+app.use("/api/auth", authRouter);
 app.use("/api/user", UserRouter);
 
-//app.get("/",async (req,res)=>{
-    //let prompt=req.query.prompt;
-    //let data =await geminiResponse(prompt);
-    //res.json(data);
-//});
-
-
-app.listen(port,()=>{
-    connectDb()
-    console.log("Server Started")
-})
+app.listen(port, () => {
+  connectDb();
+  console.log("Server Started on port", port);
+});
